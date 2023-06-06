@@ -13,6 +13,28 @@ class UserRoutes {
             userValidator.save,
             userController.save
         );
+
+        this.router.get(
+            '/',
+            userController.list
+        );
+
+        this.router.get(
+            '/:id',
+            userController.details
+        );
+
+        this.router.delete(
+            '/',
+            userController.delete
+        );
+
+        this.router.patch(
+            '/:id',
+            userValidator.edit,
+            userController.edit
+        )
+
     }
 
 }

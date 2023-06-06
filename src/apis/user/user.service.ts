@@ -42,8 +42,78 @@ class UserService {
         });
     }
 
+    /**
+     * @description get users list with pagination
+     * @param queryString 
+     * @returns list, count
+     */
+    async list(queryString: any): Promise<ServiceResponse> {
+        const page = queryString.page * 1 || 1;
+        const limit = queryString.limit * 1 || 10;
+        const skip = (page - 1) * limit;
+        const [count, list] = await Promise.all([
+            UserModel.countDocuments(),
+            UserModel.find({}).sort('-createdAt').skip(skip).limit(limit)
+        ]);
+        return {
+            status: 200,
+            message: 'User list',
+            data: { count, list }
+        }
+    }
 
 
+    /**
+     * @description edit user details
+     * @param userId 
+     * @param userData 
+     * @returns 
+     */
+    async edit(userId: string, userData: any): Promise<ServiceResponse> {
+        let user = await UserModel.findById(userId);
+        if (!user) return {
+            status: 400, message: 'Invalid user id', data: {}
+        }
+        let profileImage = user.profileImage;
+        if (userData.profileImage && typeof userData.profileImage !== 'string') {
+            profileImage = await this.uploadProfileImage(userData.profileImage);
+        }
+        user.profileImage = profileImage;
+        user.firstName = userData.firstName;
+        user.lastName = userData.lastName;
+        user.email = userData.email;
+        user.countryCode = userData.countryCode;
+        user.phoneNumber = userData.phoneNumber;
+        await user.save();
+        return {
+            status: 200, message: 'User updated', data: { user }
+        }
+    }
+
+
+    /**
+     * @description get user details 
+     * @param userId 
+     * @returns user detail object
+     */
+    async details(userId: string): Promise<ServiceResponse> {
+        const user = await UserModel.findById(userId);
+        if (!user) return {
+            status: 400, message: 'Invalid user id', data: {}
+        }
+        return { status: 200, message: 'User details', data: { user } };
+    }
+
+
+    /**
+     * @description delete a user for a given id
+     * @param userId 
+     * @returns success message
+     */
+    async delete(userId: string): Promise<ServiceResponse> {
+        await UserModel.findByIdAndDelete(userId);
+        return { status: 200, message: 'User deleted', data: {} }
+    }
 }
 
 export default new UserService()

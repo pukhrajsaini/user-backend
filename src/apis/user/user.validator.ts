@@ -17,6 +17,20 @@ class UserValidator {
         const isValid = validate(req.body, res, schema);
         if (isValid) next();
     }
+
+    async edit(req: Request, res: Response, next: NextFunction) {
+        const schema = Joi.object().keys({
+            firstName: Joi.string().required(),
+            lastName: Joi.string().required(),
+            phoneNumber: Joi.string().required(),
+            countryCode: Joi.string().required(),
+            email: Joi.string().required(),
+            profileImage: Joi.any().optional()
+        });
+
+        const isValid = validate(req.body, res, schema);
+        if (isValid) next();
+    }
 }
 
 
