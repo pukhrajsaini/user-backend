@@ -25,12 +25,13 @@ class UserRoutes {
         );
 
         this.router.delete(
-            '/',
+            '/:id',
             userController.delete
         );
 
         this.router.patch(
             '/:id',
+            uploadMiddleware,
             userValidator.edit,
             userController.edit
         )
